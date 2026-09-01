@@ -1,0 +1,31 @@
+<section class="page-shell">
+  <div class="hero">
+    <div>
+      <p class="eyebrow">GB Connected</p>
+      <h1>Organizaciones</h1>
+      <p class="subtitle">Selecciona una organización a la que tengas acceso.</p>
+    </div>
+    <span class="step">1 / 2</span>
+  </div>
+
+  <div *ngIf="loading" class="state-card">Cargando organizaciones...</div>
+  <div *ngIf="error" class="state-card error">{{ error }}</div>
+
+  <div *ngIf="!loading && !error && organizations.length > 0" class="grid">
+    <button
+      class="access-card"
+      *ngFor="let organization of organizations"
+      (click)="openOrganization(organization)">
+      <div class="icon">ORG</div>
+      <div class="card-copy">
+        <span class="code">{{ organization.code }}</span>
+        <strong>{{ organization.name }}</strong>
+        <span>Ver plantas asignadas →</span>
+      </div>
+    </button>
+  </div>
+
+  <div *ngIf="!loading && !error && organizations.length === 0" class="state-card empty">
+    No tienes organizaciones asignadas.
+  </div>
+</section>

@@ -1,0 +1,31 @@
+<section class="page-shell">
+  <button class="back" (click)="goBack()">← Volver a organizaciones</button>
+
+  <div class="hero">
+    <div>
+      <p class="eyebrow">GB Connected</p>
+      <h1>Plantas</h1>
+      <p class="subtitle" *ngIf="organizationName">{{ organizationName }}</p>
+      <p class="subtitle" *ngIf="!organizationName">Organización: {{ organizationId }}</p>
+    </div>
+    <span class="step">2 / 2</span>
+  </div>
+
+  <div *ngIf="loading" class="state-card">Cargando plantas...</div>
+  <div *ngIf="error" class="state-card error">{{ error }}</div>
+
+  <div *ngIf="!loading && !error && plants.length > 0" class="grid">
+    <div class="access-card static" *ngFor="let plant of plants">
+      <div class="icon">PLT</div>
+      <div class="card-copy">
+        <span class="code">{{ plant.code }}</span>
+        <strong>{{ plant.name }}</strong>
+        <span>Planta asignada al usuario</span>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="!loading && !error && plants.length === 0" class="state-card empty">
+    No tienes plantas asignadas dentro de esta organización.
+  </div>
+</section>

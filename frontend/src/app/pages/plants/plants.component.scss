@@ -1,0 +1,25 @@
+@use '../../../styles/mixins' as mixins;
+
+.page-shell { @include mixins.page-shell; }
+.hero { @include mixins.hero; }
+.eyebrow { @include mixins.eyebrow; }
+.subtitle { @include mixins.subtitle; }
+.step { @include mixins.step; }
+.state-card { @include mixins.state-card; }
+.grid { @include mixins.grid; }
+.access-card { @include mixins.access-card; }
+.access-card.static { cursor: default; &:hover { transform: none; } }
+.icon { @include mixins.card-icon; }
+.card-copy { @include mixins.card-copy; }
+.code { @include mixins.code; }
+.error { border-color: #d84a4a; }
+.empty { text-align: center; }
+.back {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  margin-bottom: 26px;
+  cursor: pointer;
+  font: inherit;
+  color: #4d5666;
+}

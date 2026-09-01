@@ -1,0 +1,51 @@
+GB CONNECTED ACCESS LAB
+=======================
+
+PRUEBA RAPIDA (sin Lakebase real):
+
+1) PowerShell en la raiz:
+   .\scripts\setup-local-mock.ps1
+
+2) Terminal 1:
+   .\scripts\run-backend.ps1
+
+3) Terminal 2:
+   .\scripts\run-frontend.ps1
+
+4) Abre:
+   http://localhost:4200
+
+
+PARA USAR TU LAKEBASE REAL:
+
+1) Ejecuta en Lakebase SQL Editor:
+   sql\01_schema.sql
+   sql\02_seed_local.sql
+   sql\03_data_api_permissions.sql  (reemplaza el Client ID)
+   sql\05_verify.sql
+
+2) En Lakebase -> Data API:
+   - Enable Data API
+   - Exposed schemas: agrega gb_access
+   - Refresh schema cache
+   - copia API URL
+
+3) Ejecuta:
+   .\scripts\prepare-real-lakebase.ps1
+
+4) Edita:
+   backend\src\main\resources\local.settings.json
+
+   Cambia:
+   DATABRICKS_HOST
+   DATABRICKS_CLIENT_ID
+   DATABRICKS_CLIENT_SECRET
+   LAKEBASE_DATA_API_URL
+
+5) Corre backend y frontend igual que arriba.
+
+EXPLICACION EXACTA DE LA CONEXION:
+   docs\CONFIGURACION_LAKEBASE.md
+
+GUIA COMPLETA:
+   README.md
