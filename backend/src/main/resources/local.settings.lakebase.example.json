@@ -1,0 +1,28 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "",
+    "FUNCTIONS_WORKER_RUNTIME": "java",
+    "FUNCTIONS_EXTENSION_VERSION": "~4",
+
+    "AUTH_MODE": "mock",
+    "DEV_TENANT_ID": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+    "DEV_USER_OID": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+    "DEV_USER_EMAIL": "usuario.local@demo.com",
+
+    "LAKEBASE_MODE": "data-api",
+
+    "DATABRICKS_HOST": "https://TU-WORKSPACE.azuredatabricks.net",
+    "DATABRICKS_CLIENT_ID": "CLIENT-ID-DEL-SERVICE-PRINCIPAL",
+    "DATABRICKS_CLIENT_SECRET": "SECRET-DEL-SERVICE-PRINCIPAL",
+    "DATABRICKS_OAUTH_TOKEN": "",
+
+    "LAKEBASE_DATA_API_URL": "API-URL-QUE-APARECE-EN-LAKEBASE-DATA-API",
+    "LAKEBASE_SCHEMA": "gb_access"
+  },
+  "Host": {
+    "LocalHttpPort": 7071,
+    "CORS": "http://localhost:4200",
+    "CORSCredentials": true
+  }
+}

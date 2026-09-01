@@ -1,0 +1,5 @@
+target/
+.idea/
+.vscode/
+src/main/resources/local.settings.json
+*.log
