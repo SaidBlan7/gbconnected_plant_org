@@ -461,8 +461,8 @@ public class LakebaseDataApiClient {
                 stringValue(row, "plant_municipality"),
                 booleanValue(row, "is_active"),
                 stringValue(row, "source_system"),
-                instantValue(row, "created_at"),
-                instantValue(row, "updated_at"),
+                stringValue(row, "created_at"),
+stringValue(row, "updated_at"),
                 stringValue(row, "created_by"),
                 stringValue(row, "updated_by")
         );
@@ -510,18 +510,6 @@ public class LakebaseDataApiClient {
             return decimal;
         }
         return new BigDecimal(value.toString());
-    }
-
-    private Instant instantValue(Map<String, Object> row, String key) {
-        String value = stringValue(row, key);
-        if (value == null || value.isBlank()) {
-            return null;
-        }
-        try {
-            return Instant.parse(value);
-        } catch (Exception ignored) {
-            return OffsetDateTime.parse(value).toInstant();
-        }
     }
 
     private String encode(String value) {

@@ -1,7 +1,6 @@
 package com.gbc.access.model;
 
 import java.math.BigDecimal;
-import java.time.Instant;
 
 public record PlantDetails(
         Long plantId,
@@ -17,8 +16,8 @@ public record PlantDetails(
         String plantMunicipality,
         Boolean active,
         String sourceSystem,
-        Instant createdAt,
-        Instant updatedAt,
+        String createdAt,
+        String updatedAt,
         String createdBy,
         String updatedBy
 ) {}
