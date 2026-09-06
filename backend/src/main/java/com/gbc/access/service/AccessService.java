@@ -33,7 +33,7 @@ public class AccessService {
 
     public void healthCheck() {
         if (!useMockLakebase()) {
-            lakebase.healthCheck();
+            lakebase.healthCheckCore();
         }
     }
 
@@ -42,6 +42,6 @@ public class AccessService {
     }
 
     private boolean useMockLakebase() {
-        return "mock".equalsIgnoreCase(System.getenv().getOrDefault("LAKEBASE_MODE", "data-api"));
+        return "mock".equalsIgnoreCase(System.getenv().getOrDefault("ACCESS_MODE", System.getenv().getOrDefault("LAKEBASE_MODE", "mock")));
     }
 }

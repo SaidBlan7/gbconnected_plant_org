@@ -21,10 +21,23 @@ public class DatabricksTokenProvider {
     private String cachedToken;
     private Instant expiresAt = Instant.EPOCH;
 
+    /**
+     * Local development:
+     *   - DATABRICKS_OAUTH_TOKEN, or
+     *   - DBX_OAUTH_TOKEN (same name used by the Databricks CLI examples)
+     *
+     * Production:
+     *   - if there is no manual token, falls back to Databricks M2M OAuth
+     *     using DATABRICKS_HOST + DATABRICKS_CLIENT_ID + DATABRICKS_CLIENT_SECRET.
+     */
     public synchronized String getToken() {
-        String manualToken = System.getenv("DATABRICKS_OAUTH_TOKEN");
-        if (manualToken != null && !manualToken.isBlank()) {
-            return manualToken.trim();
+        String manualToken = firstNonBlank(
+                System.getenv("DATABRICKS_OAUTH_TOKEN"),
+                System.getenv("DBX_OAUTH_TOKEN")
+        );
+
+        if (manualToken != null) {
+            return normalizeBearerToken(manualToken);
         }
 
         if (cachedToken != null && Instant.now().plusSeconds(60).isBefore(expiresAt)) {
@@ -56,7 +69,7 @@ public class DatabricksTokenProvider {
 
             if (response.statusCode() / 100 != 2) {
                 throw new IllegalStateException(
-                        "Databricks OAuth failed: " + response.statusCode() + " " + response.body()
+                        "Databricks OAuth failed: HTTP " + response.statusCode()
                 );
             }
 
@@ -73,6 +86,26 @@ public class DatabricksTokenProvider {
         } catch (Exception ex) {
             throw new IllegalStateException("Unable to obtain Databricks OAuth token", ex);
         }
+    }
+
+    private String normalizeBearerToken(String token) {
+        String normalized = token.trim();
+        if (normalized.regionMatches(true, 0, "Bearer ", 0, 7)) {
+            normalized = normalized.substring(7).trim();
+        }
+        if (normalized.isBlank()) {
+            throw new IllegalStateException("Configured Databricks OAuth token is empty");
+        }
+        return normalized;
+    }
+
+    private String firstNonBlank(String... values) {
+        for (String value : values) {
+            if (value != null && !value.isBlank()) {
+                return value;
+            }
+        }
+        return null;
     }
 
     private String required(String name) {
