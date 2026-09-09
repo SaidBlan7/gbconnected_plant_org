@@ -16,8 +16,10 @@ public class MockAccessData {
         if (!DEMO_TENANT.equalsIgnoreCase(tenantId) || !DEMO_USER.equalsIgnoreCase(objectId)) {
             return List.of();
         }
+
+        // Los IDs simulados imitan los BIGINT reales de core.organization.
         return List.of(
-                new Organization("org-mx", "MX", "Organización México")
+                new Organization("1", "MX", "Organización México")
         );
     }
 
@@ -25,12 +27,16 @@ public class MockAccessData {
         if (!DEMO_TENANT.equalsIgnoreCase(tenantId) || !DEMO_USER.equalsIgnoreCase(objectId)) {
             return List.of();
         }
-        if (!"org-mx".equalsIgnoreCase(organizationId)) {
+
+        // Compatibilidad temporal con el ID mock anterior "org-mx".
+        if (!("1".equals(organizationId) || "org-mx".equalsIgnoreCase(organizationId))) {
             return List.of();
         }
+
+        // Coinciden con MockCoreData: plant_id 1 = TOL, plant_id 2 = PUE.
         return List.of(
-                new Plant("plant-tol", "TOL", "Planta Toluca"),
-                new Plant("plant-pue", "PUE", "Planta Puebla")
+                new Plant("1", "TOL", "Planta Toluca"),
+                new Plant("2", "PUE", "Planta Puebla")
         );
     }
 }

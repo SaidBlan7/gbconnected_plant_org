@@ -7,16 +7,21 @@
     "AUTH_MODE": "mock",
     "DEV_TENANT_ID": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
     "DEV_USER_OID": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
-    "DEV_USER_EMAIL": "usuario.local@demo.com",
+    "DEV_USER_EMAIL": "cesar.vazquez@gbsupport.net",
     "ACCESS_MODE": "mock",
     "PLANT_CRUD_MODE": "mock",
-    "DATABRICKS_HOST": "",
-    "DATABRICKS_CLIENT_ID": "",
-    "DATABRICKS_CLIENT_SECRET": "",
-    "DATABRICKS_OAUTH_TOKEN": "",
-    "LAKEBASE_DATA_API_URL": "",
+    "LAKEBASE_DB_HOST": "",
+    "LAKEBASE_DB_PORT": "5432",
+    "LAKEBASE_DB_NAME": "db_gbc_ope_dev",
+    "LAKEBASE_DB_USER": "",
+    "LAKEBASE_JDBC_URL": "",
+    "LAKEBASE_SSLMODE": "require",
     "LAKEBASE_CORE_SCHEMA": "core",
     "LAKEBASE_ACCESS_SCHEMA": "app_api"
   },
-  "Host": {"LocalHttpPort": 7071,"CORS": "http://localhost:4200","CORSCredentials": true}
+  "Host": {
+    "LocalHttpPort": 7071,
+    "CORS": "http://localhost:4200",
+    "CORSCredentials": true
+  }
 }

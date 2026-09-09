@@ -2,6 +2,7 @@ package com.gbc.access.service;
 
 import com.gbc.access.model.Organization;
 import com.gbc.access.model.Plant;
+import com.gbc.access.repository.LakebaseJdbcRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -9,39 +10,31 @@ import java.util.List;
 @Service
 public class AccessService {
 
-    private final LakebaseDataApiClient lakebase;
+    private final LakebaseJdbcRepository postgres;
     private final MockAccessData mock;
 
-    public AccessService(LakebaseDataApiClient lakebase, MockAccessData mock) {
-        this.lakebase = lakebase;
+    public AccessService(LakebaseJdbcRepository postgres, MockAccessData mock) {
+        this.postgres = postgres;
         this.mock = mock;
     }
 
     public List<Organization> getOrganizations(String tenantId, String objectId) {
-        if (useMockLakebase()) {
-            return mock.getOrganizations(tenantId, objectId);
-        }
-        return lakebase.getOrganizations(tenantId, objectId);
+        return useMock() ? mock.getOrganizations(tenantId, objectId)
+                : postgres.getUserOrganizations(tenantId, objectId);
     }
 
     public List<Plant> getPlants(String tenantId, String objectId, String organizationId) {
-        if (useMockLakebase()) {
-            return mock.getPlants(tenantId, objectId, organizationId);
-        }
-        return lakebase.getPlants(tenantId, objectId, organizationId);
+        return useMock() ? mock.getPlants(tenantId, objectId, organizationId)
+                : postgres.getUserPlants(tenantId, objectId, organizationId);
     }
 
     public void healthCheck() {
-        if (!useMockLakebase()) {
-            lakebase.healthCheckCore();
-        }
+        if (!useMock()) postgres.healthCheck();
     }
 
-    public String currentMode() {
-        return useMockLakebase() ? "mock" : "data-api";
-    }
+    public String currentMode() { return useMock() ? "mock" : "postgres"; }
 
-    private boolean useMockLakebase() {
-        return "mock".equalsIgnoreCase(System.getenv().getOrDefault("ACCESS_MODE", System.getenv().getOrDefault("LAKEBASE_MODE", "mock")));
+    private boolean useMock() {
+        return "mock".equalsIgnoreCase(System.getenv().getOrDefault("ACCESS_MODE", "mock"));
     }
 }

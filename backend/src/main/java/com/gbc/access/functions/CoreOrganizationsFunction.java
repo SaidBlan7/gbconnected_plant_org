@@ -1,6 +1,7 @@
 package com.gbc.access.functions;
 
 import com.gbc.access.service.PlantCrudService;
+import com.gbc.access.service.PostgresDataAccessException;
 import com.microsoft.azure.functions.*;
 import com.microsoft.azure.functions.annotation.*;
 import org.springframework.stereotype.Component;
@@ -23,6 +24,8 @@ public class CoreOrganizationsFunction {
             return request.createResponseBuilder(HttpStatus.OK).header("Content-Type","application/json").body(service.organizations(active)).build();
         } catch (IllegalArgumentException ex) {
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(Map.of("error",ex.getMessage())).build();
+        } catch (PostgresDataAccessException ex) {
+            return databaseError(request, ex);
         } catch (Exception ex) {
             context.getLogger().severe("Organizations CRUD read error: "+ex.getMessage());
             return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error","Unable to load core organizations")).build();
@@ -42,10 +45,27 @@ public class CoreOrganizationsFunction {
                     .orElseGet(() -> request.createResponseBuilder(HttpStatus.NOT_FOUND).body(Map.of("error","Organization not found")).build());
         } catch (NumberFormatException ex) {
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(Map.of("error","organizationId must be numeric")).build();
+        } catch (PostgresDataAccessException ex) {
+            return databaseError(request, ex);
         } catch (Exception ex) {
             context.getLogger().severe("Organization by-id error: " + ex.getMessage());
             return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error","Unable to load core organization")).build();
         }
+    }
+
+    private HttpResponseMessage databaseError(HttpRequestMessage<?> request, PostgresDataAccessException ex) {
+        String state = ex.getSqlState();
+        HttpStatus status;
+        if (state != null && state.startsWith("08")) status = HttpStatus.SERVICE_UNAVAILABLE;
+        else if ("42501".equals(state)) status = HttpStatus.FORBIDDEN;
+        else if (state != null && state.startsWith("23")) status = HttpStatus.CONFLICT;
+        else if (state != null && state.startsWith("22")) status = HttpStatus.BAD_REQUEST;
+        else status = HttpStatus.INTERNAL_SERVER_ERROR;
+
+        Map<String,Object> body = new java.util.LinkedHashMap<>();
+        body.put("error", "PostgreSQL rejected the operation");
+        if (state != null) body.put("sqlState", state);
+        return request.createResponseBuilder(status).header("Content-Type","application/json").body(body).build();
     }
 
     private Boolean parseBoolean(String value){

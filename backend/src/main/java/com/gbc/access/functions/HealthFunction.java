@@ -26,7 +26,7 @@ public class HealthFunction {
             HttpRequestMessage<Optional<String>> request,
             ExecutionContext context) {
         try {
-            if ("data-api".equals(plantCrudService.currentMode())) plantCrudService.health();
+            if ("postgres".equals(plantCrudService.currentMode())) plantCrudService.health();
             else accessService.healthCheck();
             return request.createResponseBuilder(HttpStatus.OK).header("Content-Type","application/json")
                     .body(Map.of("status","UP","accessMode",accessService.currentMode(),"plantCrudMode",plantCrudService.currentMode(),"timestamp",Instant.now().toString())).build();

@@ -15,7 +15,7 @@
     <artifactId>gbc-access-backend</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>gbc-access-backend</name>
-    <description>GB Connected access API - Spring Boot + Azure Functions + Lakebase Data API</description>
+    <description>GB Connected access API - Spring Boot + Azure Functions + Lakebase PostgreSQL JDBC</description>
 
     <properties>
         <java.version>21</java.version>
@@ -49,6 +49,18 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
+        </dependency>
+
+        <!-- JDBC directo a Databricks Lakebase / PostgreSQL -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-jdbc</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>runtime</scope>
         </dependency>
 
         <dependency>

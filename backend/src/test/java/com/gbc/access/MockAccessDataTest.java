@@ -15,11 +15,11 @@ class MockAccessDataTest {
 
         assertThat(data.getOrganizations(tid, oid))
                 .extracting("id")
-                .containsExactly("org-mx");
+                .containsExactly("1");
 
-        assertThat(data.getPlants(tid, oid, "org-mx"))
+        assertThat(data.getPlants(tid, oid, "1"))
                 .extracting("id")
-                .containsExactly("plant-tol", "plant-pue");
+                .containsExactly("1", "2");
 
         assertThat(data.getPlants(tid, oid, "org-us")).isEmpty();
     }
