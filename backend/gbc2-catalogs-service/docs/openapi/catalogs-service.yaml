@@ -1,0 +1,7 @@
+openapi: 3.0.3
+info: {title: GBC2 Catalogs Service, version: 1.0.0}
+paths:
+  /api/v1/organizations: {get: {summary: List organizations, responses: {'200': {description: OK}}}}
+  /api/v1/organizations/{id}: {get: {summary: Get organization, responses: {'200': {description: OK}, '404': {description: Not found}}}}
+  /api/v1/plants: {get: {summary: List plants, responses: {'200': {description: OK}}}, post: {summary: Create plant, responses: {'201': {description: Created}}}}
+  /api/v1/plants/{id}: {get: {summary: Get plant, responses: {'200': {description: OK}}}, put: {summary: Replace plant, responses: {'200': {description: OK}}}, patch: {summary: Patch plant, responses: {'200': {description: OK}}}, delete: {summary: Delete plant, responses: {'204': {description: Deleted}}}}

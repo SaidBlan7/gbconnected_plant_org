@@ -1,0 +1,6 @@
+openapi: 3.0.3
+info: {title: GBC2 Users Service, version: 1.0.0}
+paths:
+  /api/v1/me/organizations: {get: {summary: List caller organizations, responses: {'200': {description: OK}}}}
+  /api/v1/me/organizations/{organizationId}/plants: {get: {summary: List caller plants, responses: {'200': {description: OK}}}}
+  /api/v1/debug/whoami: {get: {summary: Return resolved caller identity, responses: {'200': {description: OK}}}}

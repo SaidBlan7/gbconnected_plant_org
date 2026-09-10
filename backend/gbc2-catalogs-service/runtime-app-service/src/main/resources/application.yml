@@ -1,0 +1,29 @@
+spring:
+  application:
+    name: ${GBC_SERVICE_NAME:gbc2-catalogs-service}
+  threads:
+    virtual:
+      enabled: true
+server:
+  port: ${PORT:8080}
+  shutdown: graceful
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      probes:
+        enabled: true
+  health:
+    livenessstate:
+      enabled: true
+    readinessstate:
+      enabled: true
+gbc:
+  security:
+    enabled: ${GBC_SECURITY_ENABLED:false}
+logging:
+  pattern:
+    level: "%5p [corr:%X{correlationId:-}]"

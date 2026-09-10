@@ -1,0 +1,1 @@
+{"IsEncrypted":false,"Values":{"AzureWebJobsStorage":"UseDevelopmentStorage=true","FUNCTIONS_WORKER_RUNTIME":"java","GBC_PERSISTENCE_MODE":"memory","JDBC_URL":"jdbc:postgresql://localhost:5432/gbc2","DB_USER":"gbc2","DB_PASSWORD":"gbc2_local_only"}}
