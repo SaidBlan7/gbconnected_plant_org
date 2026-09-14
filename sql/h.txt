@@ -1,0 +1,171 @@
+Especificación funcional: 05 – Alta de producto terminado (incluye semiterminados y desperdicios de diseño) 
+
+  Contexto funcional 
+
+El catálogo de ítems de producto terminado (PT) define las presentaciones producidas por una masa y los datos necesarios para registrar entrega, rendimiento, desperdicios e integración con Oracle/WMS. Una misma masa puede tener varios PT, pero cada PT se asocia a una sola masa base en el modelo revisado. 
+
+Entre los campos del catálogo se encuentran código ERP, nombre/descripción, ritmo de producción, peso objetivo en gramos, terminación/tipo, unidad de medida, cupo, piezas por paquete, datos de contenedor secundario, masa base, ítem por defecto, estado y las banderas de semiterminado y desperdicio de diseño. 
+
+Los semiterminados representan resultados de una línea que todavía pasarán por un proceso posterior. Los desperdicios de diseño permiten configurar, por PT, tapas u orillas y su peso teórico para cálculos automáticos. 
+
+Reglas de negocio y alcance 
+
+Cada PT se asocia a una sola masa base existente. 
+
+Una masa con múltiples PT solo puede tener un ítem por defecto (default). 
+
+Un PT puede ser estacional y debe poder inactivarse sin borrarse, conservando su histórico. 
+
+Un PT semiterminado puede registrarse en piezas o en kilogramos, según configuración. 
+
+El desperdicio de diseño por tapas y por orillas puede requerir banderas y pesos independientes. 
+
+El peso secundario fue identificado como obsoleto y no debe trasladarse como requisito sin confirmación explícita. 
+
+Los campos de integración pueden cambiar al migrar una línea a Oracle; la carga masiva puede actualizar catálogos. 
+
+  Escenarios 
+
+Dar de alta un producto terminado 
+
+Como administrador de catálogos, quiero registrar un PT con sus datos maestros y su masa base para que pueda utilizarse en envoltura, rendimiento, desperdicios e integraciones, ya que el PT es la unidad con la que se registra lo producido y entregado a logística. 
+
+Descripción de prueba:  Crear un PT asociado a una masa, con peso, unidad, cupo y piezas por paquete, y verificar que quede disponible en los módulos consumidores. 
+
+Criterios de aceptación:   
+
+Dados una masa base existente y campos válidos, cuando se guarda un nuevo PT, entonces el sistema crea el PT y lo asocia a la masa seleccionada. 
+
+Dado un código que incumple la nomenclatura requerida, cuando se intenta guardar, entonces el sistema muestra la validación y evita el alta hasta corregirlo. 
+
+Configurar ítem por defecto por masa 
+
+Como administrador, quiero definir un único PT por defecto para cada masa, para que GBC pueda abrir corridas y convertir rendimientos cuando la programación solo identifica la masa, ya que varias lógicas dependen de esta relación. 
+
+Descripción de prueba:  Asignar un PT como default y comprobar que el sistema impida un segundo default para la misma masa. 
+
+Criterios de aceptación:   
+
+Dada una masa sin PT por defecto, cuando se marca uno de sus PT como default, entonces queda como único default de esa masa. 
+
+Dada una masa que ya tiene un default, cuando se intenta marcar otro PT como default, entonces el sistema impide que existan dos defaults simultáneos. 
+
+Registrar semiterminados 
+
+Como administrador, quiero marcar un PT como semiterminado y definir su unidad de registro, para representar productos que pasarán a otro proceso, ya que los procesos dislocados requieren contabilizar producción de línea aunque todavía no sea producto final de planta. 
+
+Descripción de prueba:  Activar semiterminado y seleccionar piezas o kilogramos, y verificar que el atributo sea consumible por los flujos de registro correspondientes. 
+
+Criterios de aceptación:   
+
+Dado un PT que continuará a otro proceso, cuando se activa la bandera de semiterminado, entonces el sistema habilita la configuración específica de unidad del semiterminado. 
+
+Dado un PT semiterminado inactivo, cuando se consulta un flujo operativo, entonces no debe ofrecerse para nuevas capturas cuando el módulo filtra por activos. 
+
+Configurar desperdicio de diseño 
+
+Como administrador, quiero indicar si un PT genera tapas u orillas y su peso teórico, para que GBC pueda calcular desperdicio de diseño automáticamente, ya que es una regla explícita para procesos como tostado o productos sin orillas. 
+
+Descripción de prueba:  Activar desperdicio de diseño por orillas con un peso de 0.2 kg y verificar que el dato quede disponible para multiplicarse por la cantidad de PT producido. 
+
+Criterios de aceptación:   
+
+Dado un PT con la bandera de orillas activa y peso configurado, cuando se procesa una cantidad de producto envuelto, entonces el sistema dispone del peso configurado para la lógica de desperdicio de diseño. 
+
+Dada la bandera de desperdicio activa sin el peso requerido, cuando se intenta guardar, entonces el sistema impide una configuración incompleta o la marca como inválida. 
+
+Escenarios alternos 
+
+Un PT puede ser estacional; debe poder inactivarse sin borrarse. 
+
+Una masa con múltiples PT solo puede tener un ítem por defecto. 
+
+Un PT se asocia a una sola masa base en el modelo revisado. 
+
+El semiterminado puede registrarse en piezas o en kilogramos según configuración. 
+
+Los campos de integración cambian al migrar una línea a Oracle; la carga masiva puede actualizar catálogos. 
+
+El peso secundario fue identificado como obsoleto y no debe trasladarse como requisito sin confirmación. 
+
+El desperdicio de diseño por tapas y por orillas puede requerir banderas y pesos independientes. 
+
+  Requerimientos 
+
+Requerimientos funcionales 
+
+El sistema DEBE permitir dar de alta, consultar, actualizar e inactivar productos terminados conforme a permisos. 
+
+El PT DEBE conservar el código del ERP cuando aplique. 
+
+El sistema DEBE validar la nomenclatura y el formato de los campos durante la captura. 
+
+El PT DEBE conservar un nombre/descripción visual. 
+
+El catálogo DEBE permitir configurar el ritmo de producción del PT en la unidad definida para el proceso (documentada como paquetes por hora en el caso revisado). 
+
+El PT DEBE permitir configurar el peso objetivo del paquete en gramos. 
+
+El PT DEBE conservar la terminación/tipo requerido para integración/subinventario cuando aplique. 
+
+La unidad de medida DEBE poder recibirse/alinearse con el catálogo maestro de Oracle cuando la planta esté integrada. 
+
+El sistema DEBE permitir configurar el cupo: cantidad de paquetes contenidos en el contenedor/unidad logística primaria configurada. 
+
+El sistema DEBE permitir configurar las piezas por paquete. 
+
+El sistema DEBE contar con los parámetros necesarios para convertir contenedores secundarios/pallets a contenedores primarios, paquetes y piezas. 
+
+Cada PT DEBE asociarse a una masa base existente. 
+
+El sistema DEBE limitar a un solo ítem por defecto por masa. 
+
+La ausencia de ítem por defecto DEBE manejarse de forma controlada (por definir: bloqueo de configuración o alerta obligatoria). 
+
+El sistema DEBE incluir una bandera de semiterminado y, cuando se active, permitir definir la unidad de registro aplicable. 
+
+El estado activo/inactivo DEBE controlar la disponibilidad del PT en nuevos flujos operativos sin borrar su histórico. 
+
+El sistema DEBE incluir configuración de desperdicio de diseño por tapas y/o orillas cuando aplique. 
+
+Cuando se active el desperdicio de diseño, el sistema DEBE permitir registrar el peso teórico requerido por la lógica correspondiente. 
+
+El PT DEBE poder asociarse a las líneas en las que aplica conforme al modelo de la planta. 
+
+El sistema DEBE soportar campos provenientes de Oracle y cambios requeridos durante migraciones de integración. 
+
+El sistema DEBE registrar auditoría de altas, ediciones, estado, ítem por defecto, semiterminado y desperdicio de diseño. 
+
+Requerimientos de seguridad, privacidad y protección 
+
+Restringir la edición de pesos, cupos y relaciones masa/PT por su impacto en conversiones e indicadores. 
+
+Validar rangos positivos para pesos, cupos y piezas. 
+
+Evitar que la inactivación o eliminación rompa referencias históricas o transacciones en curso. 
+
+Requerimientos de monitoreo 
+
+Auditar los cambios del PT y su origen (manual/Oracle cuando aplique). 
+
+Registrar los intentos de crear más de un default por masa. 
+
+Registrar configuraciones incompletas de desperdicio de diseño o de semiterminado. 
+
+  Dependencias e Integraciones 
+
+Catálogo de masas de producción, como masa base del PT. 
+
+Integración con Oracle/WMS para sincronización de catálogo maestro y subinventario. 
+
+Líneas de producción, para las asociaciones PT–línea. 
+
+  Preguntas abiertas / Requiere aclaración 
+
+Definir la regla definitiva cuando una masa no tiene ítem por defecto. 
+
+Confirmar todos los campos de integración Oracle que serán bloqueados, editables o de solo lectura en la nueva solución. 
+
+Normalizar los nombres de contenedor primario/secundario para evitar ambigüedad. 
+
+Definir si el PT puede cambiar de masa base después de tener histórico. 
