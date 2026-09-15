@@ -1,7 +1,162 @@
 openapi: 3.0.3
-info: {title: GBC2 Catalogs Service, version: 1.0.0}
+info:
+  title: GBC2 Catalogs Service
+  version: 1.1.0
 paths:
-  /api/v1/organizations: {get: {summary: List organizations, responses: {'200': {description: OK}}}}
-  /api/v1/organizations/{id}: {get: {summary: Get organization, responses: {'200': {description: OK}, '404': {description: Not found}}}}
-  /api/v1/plants: {get: {summary: List plants, responses: {'200': {description: OK}}}, post: {summary: Create plant, responses: {'201': {description: Created}}}}
-  /api/v1/plants/{id}: {get: {summary: Get plant, responses: {'200': {description: OK}}}, put: {summary: Replace plant, responses: {'200': {description: OK}}}, patch: {summary: Patch plant, responses: {'200': {description: OK}}}, delete: {summary: Delete plant, responses: {'204': {description: Deleted}}}}
+  /api/v1/organizations:
+    get:
+      summary: List organizations
+      responses:
+        '200': {description: OK}
+  /api/v1/organizations/{id}:
+    get:
+      summary: Get organization
+      responses:
+        '200': {description: OK}
+        '404': {description: Not found}
+  /api/v1/plants:
+    get:
+      summary: List plants
+      responses:
+        '200': {description: OK}
+    post:
+      summary: Create plant
+      responses:
+        '201': {description: Created}
+  /api/v1/plants/{id}:
+    get:
+      summary: Get plant
+      responses:
+        '200': {description: OK}
+    put:
+      summary: Replace plant
+      responses:
+        '200': {description: OK}
+    patch:
+      summary: Patch plant
+      responses:
+        '200': {description: OK}
+    delete:
+      summary: Delete plant
+      responses:
+        '204': {description: Deleted}
+
+  /api/v1/products:
+    get:
+      summary: List finished products
+      parameters:
+        - {in: query, name: organizationId, schema: {type: integer, format: int64}}
+        - {in: query, name: plantId, schema: {type: integer, format: int64}}
+        - {in: query, name: lineId, schema: {type: integer, format: int64}}
+        - {in: query, name: doughId, schema: {type: integer, format: int64}}
+        - {in: query, name: active, schema: {type: boolean}}
+        - {in: query, name: semiFinished, schema: {type: boolean}}
+        - {in: query, name: search, schema: {type: string}}
+      responses:
+        '200': {description: OK}
+    post:
+      summary: Create finished product
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/ProductRequest'}
+      responses:
+        '201': {description: Created}
+        '400': {description: Invalid product configuration}
+        '409': {description: Duplicate product or default conflict}
+
+  /api/v1/products/{id}:
+    get:
+      summary: Get finished product
+      responses:
+        '200': {description: OK}
+        '404': {description: Not found}
+    put:
+      summary: Replace finished product
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/ProductRequest'}
+      responses:
+        '200': {description: OK}
+        '400': {description: Invalid product configuration}
+        '409': {description: Duplicate product or default conflict}
+    patch:
+      summary: Patch or inactivate finished product
+      responses:
+        '200': {description: OK}
+        '400': {description: Invalid product configuration}
+        '409': {description: Default conflict}
+
+  /api/v1/doughs:
+    get:
+      summary: List dough options for product catalog
+      responses:
+        '200': {description: OK}
+
+  /api/v1/production-lines:
+    get:
+      summary: List production line options for product catalog
+      responses:
+        '200': {description: OK}
+
+  /api/v1/container-uoms:
+    get:
+      summary: List primary or secondary container UOM options
+      responses:
+        '200': {description: OK}
+
+components:
+  schemas:
+    ProductRequest:
+      type: object
+      required:
+        - organizationId
+        - oracleItemCode
+        - productName
+        - baseDoughId
+        - lineConfigurations
+      properties:
+        organizationId: {type: integer, format: int64}
+        oracleItemCode: {type: string, maxLength: 100}
+        erpName: {type: string, maxLength: 250, nullable: true}
+        productName: {type: string, maxLength: 250}
+        completionSubinventory: {type: string, maxLength: 30, nullable: true}
+        baseDoughId: {type: integer, format: int64}
+        defaultItem: {type: boolean, default: false}
+        semiFinished: {type: boolean, default: false}
+        semiFinishedUom:
+          type: string
+          nullable: true
+          enum: [PIECE, KG]
+        lidDesignWasteEnabled: {type: boolean, default: false}
+        lidDesignWasteWeightKg: {type: number, nullable: true}
+        edgeDesignWasteEnabled: {type: boolean, default: false}
+        edgeDesignWasteWeightKg: {type: number, nullable: true}
+        active: {type: boolean, default: true}
+        lineConfigurations:
+          type: array
+          minItems: 1
+          items: {$ref: '#/components/schemas/ProductLineRequest'}
+    ProductLineRequest:
+      type: object
+      required:
+        - lineId
+        - hourlyProductionRate
+        - primaryUomId
+        - packagesPerUom
+        - piecesPerPackage
+        - targetWeightPackageGrams
+      properties:
+        lineId: {type: integer, format: int64}
+        integrationItemCode: {type: string, maxLength: 100, nullable: true}
+        hourlyProductionRate: {type: number, minimum: 0, exclusiveMinimum: true}
+        primaryUomId: {type: integer, format: int64}
+        packagesPerUom: {type: number, minimum: 0, exclusiveMinimum: true}
+        piecesPerPackage: {type: number, minimum: 0, exclusiveMinimum: true}
+        secondaryUomId: {type: integer, format: int64, nullable: true}
+        uomsPerSecondaryContainer: {type: number, nullable: true}
+        targetWeightPackageGrams: {type: number, minimum: 0, exclusiveMinimum: true}
+        active: {type: boolean, default: true}

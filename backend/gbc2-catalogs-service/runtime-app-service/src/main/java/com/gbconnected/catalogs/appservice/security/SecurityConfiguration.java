@@ -39,19 +39,25 @@ public class SecurityConfiguration {
                 .requestMatchers(
                         HttpMethod.POST,
                         "/api/v1/plants/**",
-                        "/api/plants/**"
+                        "/api/plants/**",
+                        "/api/v1/products/**",
+                        "/api/products/**"
                 ).hasAuthority("APPROLE_GB.Admin")
 
                 .requestMatchers(
                         HttpMethod.PUT,
                         "/api/v1/plants/**",
-                        "/api/plants/**"
+                        "/api/plants/**",
+                        "/api/v1/products/**",
+                        "/api/products/**"
                 ).hasAuthority("APPROLE_GB.Admin")
 
                 .requestMatchers(
                         HttpMethod.PATCH,
                         "/api/v1/plants/**",
-                        "/api/plants/**"
+                        "/api/plants/**",
+                        "/api/v1/products/**",
+                        "/api/products/**"
                 ).hasAuthority("APPROLE_GB.Admin")
 
                 .requestMatchers(
@@ -77,35 +83,22 @@ public class SecurityConfiguration {
     }
 
     private JwtAuthenticationConverter converter() {
+        JwtGrantedAuthoritiesConverter scopes = new JwtGrantedAuthoritiesConverter();
+        JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
 
-        JwtGrantedAuthoritiesConverter scopes =
-                new JwtGrantedAuthoritiesConverter();
-
-        JwtAuthenticationConverter c =
-                new JwtAuthenticationConverter();
-
-        c.setJwtGrantedAuthoritiesConverter(jwt -> {
-            List<GrantedAuthority> a = new ArrayList<>();
-
-            Collection<GrantedAuthority> s = scopes.convert(jwt);
-
-            if (s != null) {
-                a.addAll(s);
-            }
+        converter.setJwtGrantedAuthoritiesConverter(jwt -> {
+            List<GrantedAuthority> authorities = new ArrayList<>();
+            Collection<GrantedAuthority> scopeAuthorities = scopes.convert(jwt);
+            if (scopeAuthorities != null) authorities.addAll(scopeAuthorities);
 
             List<String> roles = jwt.getClaimAsStringList("roles");
-
             if (roles != null) {
-                roles.forEach(
-                        r -> a.add(
-                                new SimpleGrantedAuthority("APPROLE_" + r)
-                        )
-                );
+                roles.forEach(role -> authorities.add(
+                        new SimpleGrantedAuthority("APPROLE_" + role)));
             }
-
-            return a;
+            return authorities;
         });
 
-        return c;
+        return converter;
     }
 }

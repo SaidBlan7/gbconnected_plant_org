@@ -1,71 +1,69 @@
 package com.gbconnected.catalogs.appservice.web;
 
-import com.gbconnected.catalogs.application.*;
+import com.gbconnected.catalogs.application.CatalogReferenceException;
+import com.gbconnected.catalogs.application.DefaultProductConflictException;
+import com.gbconnected.catalogs.application.DuplicatePlantException;
+import com.gbconnected.catalogs.application.DuplicateProductException;
+import com.gbconnected.catalogs.application.OrganizationNotFoundException;
+import com.gbconnected.catalogs.application.PlantNotFoundException;
+import com.gbconnected.catalogs.application.ProductNotFoundException;
 import com.gbconnected.catalogs.domain.DomainValidationException;
-
 import jakarta.servlet.http.HttpServletRequest;
-
 import java.net.URI;
-
-import org.springframework.http.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 public class ApiExceptionHandler {
 
     @ExceptionHandler({
             PlantNotFoundException.class,
-            OrganizationNotFoundException.class
+            OrganizationNotFoundException.class,
+            ProductNotFoundException.class
     })
-    ProblemDetail nf(RuntimeException e, HttpServletRequest r) {
-        return p(
-                HttpStatus.NOT_FOUND,
-                "Resource not found",
-                e.getMessage(),
-                r
-        );
+    ProblemDetail notFound(RuntimeException exception, HttpServletRequest request) {
+        return problem(HttpStatus.NOT_FOUND, "Resource not found", exception.getMessage(), request);
     }
 
     @ExceptionHandler({
             DomainValidationException.class,
+            CatalogReferenceException.class,
             MethodArgumentNotValidException.class,
             IllegalArgumentException.class
     })
-    ProblemDetail bad(Exception e, HttpServletRequest r) {
-        return p(
-                HttpStatus.BAD_REQUEST,
-                "Invalid request",
-                e.getMessage(),
-                r
-        );
+    ProblemDetail badRequest(Exception exception, HttpServletRequest request) {
+        return problem(HttpStatus.BAD_REQUEST, "Invalid request", exception.getMessage(), request);
     }
 
     @ExceptionHandler(DuplicatePlantException.class)
-    ProblemDetail dup(Exception e, HttpServletRequest r) {
-        return p(
-                HttpStatus.CONFLICT,
-                "Duplicate plant",
-                e.getMessage(),
-                r
-        );
+    ProblemDetail duplicatePlant(Exception exception, HttpServletRequest request) {
+        return problem(HttpStatus.CONFLICT, "Duplicate plant", exception.getMessage(), request);
     }
 
-    private ProblemDetail p(
-            HttpStatus s,
-            String t,
-            String d,
-            HttpServletRequest r
-    ) {
-        ProblemDetail p = ProblemDetail.forStatusAndDetail(
-                s,
-                d == null ? "Request failed" : d
-        );
+    @ExceptionHandler(DuplicateProductException.class)
+    ProblemDetail duplicateProduct(Exception exception, HttpServletRequest request) {
+        return problem(HttpStatus.CONFLICT, "Duplicate product", exception.getMessage(), request);
+    }
 
-        p.setTitle(t);
-        p.setType(URI.create("urn:gbc2:error:" + s.value()));
-        p.setProperty("path", r.getRequestURI());
+    @ExceptionHandler(DefaultProductConflictException.class)
+    ProblemDetail defaultConflict(Exception exception, HttpServletRequest request) {
+        return problem(HttpStatus.CONFLICT, "Default product conflict", exception.getMessage(), request);
+    }
 
-        return p;
+    private ProblemDetail problem(
+            HttpStatus status,
+            String title,
+            String detail,
+            HttpServletRequest request) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(
+                status,
+                detail == null ? "Request failed" : detail);
+        problem.setTitle(title);
+        problem.setType(URI.create("urn:gbc2:error:" + status.value()));
+        problem.setProperty("path", request.getRequestURI());
+        return problem;
     }
 }
